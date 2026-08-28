@@ -2,8 +2,9 @@ import { useState } from 'react'
 import Review from './Review.jsx'
 import Browse from './Browse.jsx'
 import Stats from './Stats.jsx'
+import Notes from './Notes.jsx'
 
-const TITLES = { review: 'Review', browse: 'Browse', stats: 'Stats' }
+const TITLES = { review: 'Review', browse: 'Browse', stats: 'Stats', notes: 'Notes' }
 
 export default function App() {
   const [tab, setTab] = useState('review')
@@ -19,6 +20,7 @@ export default function App() {
         {tab === 'review' && <Review setCount={setCount} />}
         {tab === 'browse' && <Browse />}
         {tab === 'stats' && <Stats />}
+        {tab === 'notes' && <Notes />}
       </main>
       <nav>
         <button className={tab === 'review' ? 'on' : ''} onClick={() => setTab('review')}>
@@ -29,6 +31,9 @@ export default function App() {
         </button>
         <button className={tab === 'stats' ? 'on' : ''} onClick={() => setTab('stats')}>
           Stats
+        </button>
+        <button className={tab === 'notes' ? 'on' : ''} onClick={() => setTab('notes')}>
+          Notes
         </button>
       </nav>
     </>

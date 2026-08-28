@@ -11,6 +11,7 @@ async function call(path, opts) {
 export const getDue = () => call('/api/due')
 export const getCards = (q) => call('/api/cards?q=' + encodeURIComponent(q))
 export const getStats = () => call('/api/stats')
+export const getNotes = () => call('/api/notes')
 export const answer = (id, quality) =>
   call('/api/answer', {
     method: 'POST',
