@@ -3,18 +3,34 @@ import Review from './Review.jsx'
 import Browse from './Browse.jsx'
 import Stats from './Stats.jsx'
 import Notes from './Notes.jsx'
+import Login from './Login.jsx'
+import { isLoggedIn, logout } from './api'
 
 const TITLES = { review: 'Review', browse: 'Browse', stats: 'Stats', notes: 'Notes' }
 
 export default function App() {
+  const [authed, setAuthed] = useState(isLoggedIn())
   const [tab, setTab] = useState('review')
   const [count, setCount] = useState('')
+
+  if (!authed) return <Login onSuccess={() => setAuthed(true)} />
 
   return (
     <>
       <header>
         <b>{TITLES[tab]}</b>
-        <span id="count">{tab === 'review' ? count : ''}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span id="count">{tab === 'review' ? count : ''}</span>
+          <button
+            style={{ padding: '4px 10px', minHeight: 'auto', fontSize: 12 }}
+            onClick={() => {
+              logout()
+              setAuthed(false)
+            }}
+          >
+            Log out
+          </button>
+        </span>
       </header>
       <main>
         {tab === 'review' && <Review setCount={setCount} />}
