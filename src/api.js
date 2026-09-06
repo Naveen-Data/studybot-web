@@ -11,11 +11,6 @@ async function raw(path, opts) {
   return res
 }
 
-export async function authStatus() {
-  const res = await raw('/api/auth/status')
-  return res.json()
-}
-
 async function credential(path, username, password) {
   const res = await raw(path, {
     method: 'POST',
@@ -63,5 +58,28 @@ export const answer = (id, quality) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id, quality }),
   })
+
+export const getTokens = () => call('/api/tokens')
+export const createToken = (name) =>
+  call('/api/tokens', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  })
+export const revokeToken = (id) => call('/api/tokens/' + id, { method: 'DELETE' })
+
+// Not routed through call(): a wrong old password is a 401 that means
+// "you got the password wrong", not "your session expired" — it must not
+// force a logout the way every other 401 in this app does.
+export async function changePassword(oldPassword, newPassword) {
+  const res = await raw('/api/auth/change-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + getSession() },
+    body: JSON.stringify({ old_password: oldPassword, new_password: newPassword }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Failed')
+  return data
+}
 
 export const apiOrigin = API

@@ -1,19 +1,15 @@
-import { useEffect, useState } from 'react'
-import { authStatus, login, register } from './api'
+import { useState } from 'react'
+import { login, register } from './api'
 
 export default function Login({ onSuccess }) {
-  const [mode, setMode] = useState(null) // 'login' | 'register', null while checking
+  // Registration is always open — there's no single-account gate anymore,
+  // so both modes are just a toggle, not something the server decides for us.
+  const [mode, setMode] = useState('login') // 'login' | 'register'
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-
-  useEffect(() => {
-    authStatus()
-      .then((s) => setMode(s.registered ? 'login' : 'register'))
-      .catch(() => setMode('login'))
-  }, [])
 
   async function submit(e) {
     e.preventDefault()
@@ -32,8 +28,6 @@ export default function Login({ onSuccess }) {
       setBusy(false)
     }
   }
-
-  if (mode === null) return <div className="empty">Loading…</div>
 
   return (
     <div className="card" style={{ maxWidth: 320, margin: '80px auto' }}>
@@ -66,6 +60,23 @@ export default function Login({ onSuccess }) {
           {mode === 'register' ? 'Create account' : 'Log in'}
         </button>
       </form>
+      <div className="notes" style={{ marginTop: 12, textAlign: 'center' }}>
+        {mode === 'register' ? (
+          <>
+            Already have an account?{' '}
+            <a href="#" onClick={(e) => { e.preventDefault(); setError(''); setMode('login') }}>
+              Log in
+            </a>
+          </>
+        ) : (
+          <>
+            Need an account?{' '}
+            <a href="#" onClick={(e) => { e.preventDefault(); setError(''); setMode('register') }}>
+              Register
+            </a>
+          </>
+        )}
+      </div>
     </div>
   )
 }
