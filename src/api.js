@@ -52,6 +52,12 @@ export const getDue = () => call('/api/due')
 export const getCards = (q) => call('/api/cards?q=' + encodeURIComponent(q))
 export const getStats = () => call('/api/stats')
 export const getNotes = () => call('/api/notes')
+export const addNote = (topic, content, tags) =>
+  call('/api/notes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ topic, content, tags }),
+  })
 export const answer = (id, quality) =>
   call('/api/answer', {
     method: 'POST',

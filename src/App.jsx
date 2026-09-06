@@ -4,10 +4,11 @@ import Browse from './Browse.jsx'
 import Stats from './Stats.jsx'
 import Notes from './Notes.jsx'
 import Tokens from './Tokens.jsx'
+import Pomodoro from './Pomodoro.jsx'
 import Login from './Login.jsx'
 import { isLoggedIn, logout } from './api'
 
-const TITLES = { review: 'Review', browse: 'Browse', stats: 'Stats', notes: 'Notes', tokens: 'Tokens' }
+const TITLES = { review: 'Review', browse: 'Browse', stats: 'Stats', notes: 'Notes', focus: 'Focus', tokens: 'Tokens' }
 
 export default function App() {
   const [authed, setAuthed] = useState(isLoggedIn())
@@ -38,6 +39,7 @@ export default function App() {
         {tab === 'browse' && <Browse />}
         {tab === 'stats' && <Stats />}
         {tab === 'notes' && <Notes />}
+        {tab === 'focus' && <Pomodoro />}
         {tab === 'tokens' && <Tokens />}
       </main>
       <nav>
@@ -52,6 +54,9 @@ export default function App() {
         </button>
         <button className={tab === 'notes' ? 'on' : ''} onClick={() => setTab('notes')}>
           Notes
+        </button>
+        <button className={tab === 'focus' ? 'on' : ''} onClick={() => setTab('focus')}>
+          Focus
         </button>
         <button className={tab === 'tokens' ? 'on' : ''} onClick={() => setTab('tokens')}>
           Tokens
