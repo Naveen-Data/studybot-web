@@ -50,6 +50,13 @@ async function call(path, opts = {}) {
 
 export const getDue = () => call('/api/due')
 export const getCards = (q) => call('/api/cards?q=' + encodeURIComponent(q))
+export const editCard = (id, fields) =>
+  call('/api/cards/' + id, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(fields),
+  })
+export const deleteCard = (id) => call('/api/cards/' + id, { method: 'DELETE' })
 export const getStats = () => call('/api/stats')
 export const getNotes = () => call('/api/notes')
 export const addNote = (topic, content, tags) =>
@@ -58,6 +65,13 @@ export const addNote = (topic, content, tags) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ topic, content, tags }),
   })
+export const editNote = (id, fields) =>
+  call('/api/notes/' + id, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(fields),
+  })
+export const deleteNote = (id) => call('/api/notes/' + id, { method: 'DELETE' })
 export const answer = (id, quality) =>
   call('/api/answer', {
     method: 'POST',
