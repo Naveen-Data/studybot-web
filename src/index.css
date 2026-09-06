@@ -35,10 +35,11 @@ nav {
 }
 nav button { flex: 1; border: 0; border-radius: 0; background: none; color: var(--dim); font-size: 13px; padding: 12px 0; }
 nav button.on { color: var(--accent); font-weight: 600; }
-input {
+input, textarea {
   width: 100%; font: inherit; color: var(--fg); background: var(--card); border: 1px solid var(--line);
   border-radius: 12px; padding: 12px; margin-bottom: 14px;
 }
+textarea { resize: vertical; }
 .row { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 8px; cursor: pointer; }
 .row .qq { font-weight: 500; }
 .row .aa { margin-top: 8px; color: var(--dim); font-size: 14px; white-space: pre-wrap; }
