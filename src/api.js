@@ -58,7 +58,7 @@ export const editCard = (id, fields) =>
   })
 export const deleteCard = (id) => call('/api/cards/' + id, { method: 'DELETE' })
 export const getStats = () => call('/api/stats')
-export const getNotes = () => call('/api/notes')
+export const getNotes = (q = '') => call('/api/notes?q=' + encodeURIComponent(q))
 export const addNote = (topic, content, tags) =>
   call('/api/notes', {
     method: 'POST',

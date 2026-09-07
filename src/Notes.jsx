@@ -1,8 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { addNote, deleteNote, editNote, getNotes } from './api'
+
+const SPLIT_URL_RE = /(https?:\/\/[^\s]+)/g
+const IS_URL_RE = /^https?:\/\//
+
+function linkify(text) {
+  return text.split(SPLIT_URL_RE).map((part, i) =>
+    IS_URL_RE.test(part) ? (
+      <a key={i} href={part} target="_blank" rel="noopener noreferrer">{part}</a>
+    ) : (
+      part
+    )
+  )
+}
 
 export default function Notes() {
   const [notes, setNotes] = useState(null)
+  const [term, setTerm] = useState('')
   const [topic, setTopic] = useState('')
   const [content, setContent] = useState('')
   const [tags, setTags] = useState('')
@@ -10,12 +24,17 @@ export default function Notes() {
   const [busy, setBusy] = useState(false)
   const [editing, setEditing] = useState(null)
   const [draft, setDraft] = useState({ topic: '', content: '', tags: '' })
+  const timer = useRef(null)
 
   function load() {
-    getNotes().then(setNotes).catch(() => setNotes([]))
+    getNotes(term).then(setNotes).catch(() => setNotes([]))
   }
 
-  useEffect(load, [])
+  useEffect(() => {
+    clearTimeout(timer.current)
+    timer.current = setTimeout(load, 200)
+    return () => clearTimeout(timer.current)
+  }, [term])
 
   async function submit(e) {
     e.preventDefault()
@@ -74,10 +93,12 @@ export default function Notes() {
         </button>
       </form>
 
+      <input placeholder="Search notes…" autoComplete="off" value={term} onChange={(e) => setTerm(e.target.value)} />
+
       {notes === null ? (
         <div className="empty">Loading…</div>
       ) : notes.length === 0 ? (
-        <div className="empty">No session notes yet.</div>
+        <div className="empty">{term ? 'No matching notes.' : 'No session notes yet.'}</div>
       ) : (
         notes.map((n) =>
           editing === n.id ? (
@@ -111,7 +132,7 @@ export default function Notes() {
               <div className="q" style={{ fontSize: 16 }}>
                 {n.topic}
               </div>
-              <div className="notes">{n.content}</div>
+              <div className="notes">{linkify(n.content)}</div>
               {n.tags && <div className="tags">🏷 {n.tags}</div>}
               <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                 <button style={{ fontSize: 12, padding: '6px 10px', minHeight: 'auto' }} onClick={() => startEdit(n)}>
