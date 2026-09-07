@@ -44,5 +44,6 @@ textarea { resize: vertical; }
 .row .qq { font-weight: 500; }
 .row .aa { margin-top: 8px; color: var(--dim); font-size: 14px; white-space: pre-wrap; }
 .empty { text-align: center; color: var(--dim); padding: 48px 16px; }
+a { color: var(--accent); }
 .kbd { color: var(--dim); font-size: 12px; text-align: center; margin-top: 14px; }
 @media (hover: none) { .kbd { display: none; } }
