@@ -9,12 +9,21 @@ import Login from './Login.jsx'
 import { isLoggedIn, logout } from './api'
 import { format, usePomodoro } from './pomodoro'
 
-const TITLES = { review: 'Review', browse: 'Browse', stats: 'Stats', notes: 'Notes', focus: 'Focus', tokens: 'Tokens' }
+const TABS = [
+  ['review', 'Review'],
+  ['browse', 'Browse'],
+  ['stats', 'Stats'],
+  ['notes', 'Notes'],
+  ['focus', 'Focus'],
+  ['tokens', 'Tokens'],
+]
+const TITLES = Object.fromEntries(TABS)
 
 export default function App() {
   const [authed, setAuthed] = useState(isLoggedIn())
   const [tab, setTab] = useState('review')
   const [count, setCount] = useState('')
+  const [panelOpen, setPanelOpen] = useState(false)
   // Called unconditionally (before the auth early-return) so the timer keeps
   // running across tab switches — it's a sibling of every tab, not owned by
   // the Focus tab alone, which would kill it on unmount every time you left.
@@ -22,16 +31,26 @@ export default function App() {
 
   if (!authed) return <Login onSuccess={() => setAuthed(true)} />
 
+  function go(t) {
+    setTab(t)
+    setPanelOpen(false)
+  }
+
   return (
     <>
       <header>
-        <b>{TITLES[tab]}</b>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button className="icon-btn" aria-label="Menu" onClick={() => setPanelOpen((v) => !v)}>
+            ☰
+          </button>
+          <b>{TITLES[tab]}</b>
+        </span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {pomo.running && (
             <button
-              onClick={() => setTab('focus')}
+              onClick={() => go('focus')}
               style={{
-                padding: '4px 10px', minHeight: 'auto', fontSize: 12, fontVariantNumeric: 'tabular-nums',
+                height: 32, padding: '0 10px', minHeight: 'auto', fontSize: 12, fontVariantNumeric: 'tabular-nums',
                 color: pomo.phase === 'work' ? 'var(--accent)' : '#4caf7d',
                 borderColor: pomo.phase === 'work' ? 'var(--accent)' : '#4caf7d',
               }}
@@ -41,7 +60,7 @@ export default function App() {
           )}
           <span id="count">{tab === 'review' ? count : ''}</span>
           <button
-            style={{ padding: '4px 10px', minHeight: 'auto', fontSize: 12 }}
+            style={{ height: 32, padding: '0 10px', minHeight: 'auto', fontSize: 12 }}
             onClick={() => {
               logout()
               setAuthed(false)
@@ -59,25 +78,14 @@ export default function App() {
         {tab === 'focus' && <Pomodoro pomo={pomo} />}
         {tab === 'tokens' && <Tokens />}
       </main>
-      <nav>
-        <button className={tab === 'review' ? 'on' : ''} onClick={() => setTab('review')}>
-          Review
-        </button>
-        <button className={tab === 'browse' ? 'on' : ''} onClick={() => setTab('browse')}>
-          Browse
-        </button>
-        <button className={tab === 'stats' ? 'on' : ''} onClick={() => setTab('stats')}>
-          Stats
-        </button>
-        <button className={tab === 'notes' ? 'on' : ''} onClick={() => setTab('notes')}>
-          Notes
-        </button>
-        <button className={tab === 'focus' ? 'on' : ''} onClick={() => setTab('focus')}>
-          Focus
-        </button>
-        <button className={tab === 'tokens' ? 'on' : ''} onClick={() => setTab('tokens')}>
-          Tokens
-        </button>
+
+      {panelOpen && <div className="panel-backdrop" onClick={() => setPanelOpen(false)} />}
+      <nav className={panelOpen ? 'open' : ''}>
+        {TABS.map(([id, label]) => (
+          <button key={id} className={tab === id ? 'on' : ''} onClick={() => go(id)}>
+            {label}
+          </button>
+        ))}
       </nav>
     </>
   )

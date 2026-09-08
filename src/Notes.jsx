@@ -25,9 +25,16 @@ export default function Notes() {
   const [editing, setEditing] = useState(null)
   const [draft, setDraft] = useState({ topic: '', content: '', tags: '' })
   const timer = useRef(null)
+  const reqId = useRef(0)
 
   function load() {
-    getNotes(term).then(setNotes).catch(() => setNotes([]))
+    // submit()/saveEdit()/remove() call this directly, bypassing the debounce
+    // below, so two fetches can race — apply only the result of whichever was
+    // requested last, not whichever happens to resolve last.
+    const id = ++reqId.current
+    getNotes(term)
+      .then((data) => { if (id === reqId.current) setNotes(data) })
+      .catch(() => { if (id === reqId.current) setNotes([]) })
   }
 
   useEffect(() => {

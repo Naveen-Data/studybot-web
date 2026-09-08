@@ -1,29 +1,38 @@
 import { useEffect, useRef, useState } from 'react'
 import { deleteCard, editCard, getCards } from './api'
+import TopicPicker from './TopicPicker.jsx'
 
 export default function Browse() {
   const [term, setTerm] = useState('')
+  const [topic, setTopic] = useState('')
   const [cards, setCards] = useState([])
   const [open, setOpen] = useState(null)
   const [editing, setEditing] = useState(null) // card id being edited, or null
-  const [draft, setDraft] = useState({ question: '', answer: '', tags: '' })
+  const [draft, setDraft] = useState({ question: '', answer: '', tags: '', topic: '' })
   const [error, setError] = useState('')
   const timer = useRef(null)
+  const reqId = useRef(0)
 
   function search() {
-    getCards(term).then(setCards).catch(() => setCards([]))
+    // saveEdit()/remove() call this directly, bypassing the debounce below, so
+    // two fetches can race — apply only the result of whichever was requested
+    // last, not whichever happens to resolve last.
+    const id = ++reqId.current
+    getCards(term, topic)
+      .then((data) => { if (id === reqId.current) setCards(data) })
+      .catch(() => { if (id === reqId.current) setCards([]) })
   }
 
   useEffect(() => {
     clearTimeout(timer.current)
     timer.current = setTimeout(search, 200)
     return () => clearTimeout(timer.current)
-  }, [term])
+  }, [term, topic])
 
   function startEdit(c) {
     setEditing(c.id)
     setError('')
-    setDraft({ question: c.question, answer: c.answer, tags: c.tags || '' })
+    setDraft({ question: c.question, answer: c.answer, tags: c.tags || '', topic: c.topic || '' })
   }
 
   async function saveEdit(id) {
@@ -52,6 +61,7 @@ export default function Browse() {
         value={term}
         onChange={(e) => setTerm(e.target.value)}
       />
+      <TopicPicker value={topic} onChange={setTopic} />
       {cards.length === 0 ? (
         <div className="empty">No cards.</div>
       ) : (
@@ -74,6 +84,11 @@ export default function Browse() {
                 value={draft.tags}
                 onChange={(e) => setDraft({ ...draft, tags: e.target.value })}
               />
+              <input
+                placeholder="Topic (e.g. programming, rag)"
+                value={draft.topic}
+                onChange={(e) => setDraft({ ...draft, topic: e.target.value })}
+              />
               {error && <div className="notes" style={{ color: '#e05555' }}>{error}</div>}
               <div style={{ display: 'flex', gap: 8 }}>
                 <button className="wide" onClick={() => saveEdit(c.id)}>Save</button>
@@ -89,6 +104,12 @@ export default function Browse() {
                 <>
                   <div className="aa">
                     {c.back}
+                    {c.topic && (
+                      <>
+                        <br />
+                        📂 {c.topic}
+                      </>
+                    )}
                     {c.tags && (
                       <>
                         <br />
