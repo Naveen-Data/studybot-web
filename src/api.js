@@ -48,8 +48,10 @@ async function call(path, opts = {}) {
   return res.json()
 }
 
-export const getDue = () => call('/api/due')
-export const getCards = (q) => call('/api/cards?q=' + encodeURIComponent(q))
+export const getDue = (topic = '') => call('/api/due?topic=' + encodeURIComponent(topic))
+export const getCards = (q, topic = '') =>
+  call('/api/cards?q=' + encodeURIComponent(q) + '&topic=' + encodeURIComponent(topic))
+export const getTopics = () => call('/api/topics')
 export const editCard = (id, fields) =>
   call('/api/cards/' + id, {
     method: 'PATCH',

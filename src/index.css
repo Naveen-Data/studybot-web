@@ -15,7 +15,7 @@ body {
 header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
 header b { font-size: 17px; }
 #count { color: var(--dim); font-size: 14px; }
-main { padding: 16px; max-width: 680px; margin: 0 auto; padding-bottom: 80px; }
+main { padding: 16px; max-width: 680px; margin: 0 auto; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 14px; }
 .q { font-size: 20px; font-weight: 600; white-space: pre-wrap; }
 .a { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); white-space: pre-wrap; }
@@ -27,14 +27,27 @@ button {
 }
 button:active { opacity: .6; }
 .wide { width: 100%; font-weight: 600; background: var(--accent); color: #fff; border: 0; }
+.icon-btn {
+  width: 32px; height: 32px; padding: 0; min-height: auto; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
 .rate { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .rate button { font-size: 13px; padding: 12px 4px; }
-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: var(--card);
-  border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom);
+.panel-backdrop {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 20;
 }
-nav button { flex: 1; border: 0; border-radius: 0; background: none; color: var(--dim); font-size: 13px; padding: 12px 0; }
-nav button.on { color: var(--accent); font-weight: 600; }
+nav {
+  position: fixed; top: 0; bottom: 0; left: 0; width: 220px; z-index: 21;
+  display: flex; flex-direction: column; background: var(--card); border-right: 1px solid var(--line);
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  transform: translateX(-100%); transition: transform .2s ease;
+}
+nav.open { transform: translateX(0); }
+nav button {
+  border: 0; border-radius: 0; background: none; color: var(--dim); font-size: 15px;
+  text-align: left; padding: 16px 20px;
+}
+nav button.on { color: var(--accent); font-weight: 600; background: var(--bg); }
 input, textarea {
   width: 100%; font: inherit; color: var(--fg); background: var(--card); border: 1px solid var(--line);
   border-radius: 12px; padding: 12px; margin-bottom: 14px;
